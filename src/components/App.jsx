@@ -31,24 +31,33 @@ export class App extends Component {
 
   countPositiveFeedbackPercentage = () => {
     const { good } = this.state;
+    const total = this.countTotalFeedback();
 
-    return (good / this.countTotalFeedback()) * 100;
+    return total ? Math.round((good / total) * 100) : 0;
   };
 
   render() {
+    const keys = Object.keys(this.state);
+    const { good, neutral, bad } = this.state;
+    const {
+      handleTarget,
+      countTotalFeedback,
+      countPositiveFeedbackPercentage,
+    } = this;
+
     return (
       <Box p={10}>
         <FeedbackOptions
-          options={Object.keys(this.state)}
-          onLeaveFeedback={this.handleTarget}
+          options={keys}
+          onLeaveFeedback={handleTarget}
         ></FeedbackOptions>
 
         <Statistics
-          good={this.state.good}
-          neutral={this.state.neutral}
-          bad={this.state.bad}
-          total={this.countTotalFeedback()}
-          positivePercentage={this.countPositiveFeedbackPercentage().toFixed(0)}
+          good={good}
+          neutral={neutral}
+          bad={bad}
+          total={countTotalFeedback()}
+          positivePercentage={countPositiveFeedbackPercentage()}
         ></Statistics>
       </Box>
     );
