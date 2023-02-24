@@ -1,65 +1,56 @@
 import { Box } from './Box';
 
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
 import { Statistics } from './Statistics/Statistics';
 
-export class App extends Component {
-  static defaultProps = { initialValue: 0 };
+export const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBed] = useState(0);
 
-  state = {
-    good: this.props.initialValue,
-    neutral: this.props.initialValue,
-    bad: this.props.initialValue,
+  const feedbackOption = ['good', 'neutral', 'bad'];
+
+  const handleTarget = e => {
+    switch (e.currentTarget.name) {
+      case 'good':
+        setGood(prevState => prevState + 1);
+        break;
+      case 'neutral':
+        setNeutral(prevState => prevState + 1);
+        break;
+      case 'bad':
+        setBed(prevState => prevState + 1);
+        break;
+      default:
+        return;
+    }
   };
 
-  handleTarget = e => {
-    const target = e.currentTarget.name;
-
-    this.setState(prevState => {
-      return {
-        [target]: prevState[target] + 1,
-      };
-    });
-  };
-
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-
+  const countTotalFeedback = () => {
     return good + bad + neutral;
   };
 
-  countPositiveFeedbackPercentage = () => {
-    const { good } = this.state;
-    const total = this.countTotalFeedback();
+  const countPositiveFeedbackPercentage = () => {
+    const total = countTotalFeedback();
 
     return total ? Math.round((good / total) * 100) : 0;
   };
 
-  render() {
-    const keys = Object.keys(this.state);
-    const { good, neutral, bad } = this.state;
-    const {
-      handleTarget,
-      countTotalFeedback,
-      countPositiveFeedbackPercentage,
-    } = this;
+  return (
+    <Box p={10}>
+      <FeedbackOptions
+        options={feedbackOption}
+        onLeaveFeedback={handleTarget}
+      ></FeedbackOptions>
 
-    return (
-      <Box p={10}>
-        <FeedbackOptions
-          options={keys}
-          onLeaveFeedback={handleTarget}
-        ></FeedbackOptions>
-
-        <Statistics
-          good={good}
-          neutral={neutral}
-          bad={bad}
-          total={countTotalFeedback()}
-          positivePercentage={countPositiveFeedbackPercentage()}
-        ></Statistics>
-      </Box>
-    );
-  }
-}
+      <Statistics
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        total={countTotalFeedback()}
+        positivePercentage={countPositiveFeedbackPercentage()}
+      ></Statistics>
+    </Box>
+  );
+};
